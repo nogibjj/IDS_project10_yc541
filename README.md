@@ -1,25 +1,33 @@
-[![CI](https://github.com/nogibjj/python-template/actions/workflows/cicd.yml/badge.svg)](https://github.com/nogibjj/python-template/actions/workflows/cicd.yml)
-## Template for Python projects 
+# Email Data Analysis with PySpark
 
-1. First thing to do on launch is to open a new shell and verify virtualenv is sourced.
+This repository contains a PySpark script for analyzing an email dataset. The script performs basic data processing, executes a Spark SQL query to find the most common words, and transforms data into a suitable format for further analysis.
 
-Things included are:
+## Dataset
 
-* `Makefile`
+The dataset is assumed to contain various statistics related to emails, such as the most common words in the email body and counts of unique values.
 
-* `Pytest`
+## Prerequisites
 
-* `pandas`
+Before running the script, ensure you have the following installed:
+- Python 3.x
+- PySpark
+- A Spark cluster (local mode is sufficient for small datasets)
 
-* `Pylint`
+## Script
 
-* `Dockerfile`
+`email_analysis.py` is the main script of the project. It reads the data from a CSV file, processes it, and saves the results.
 
-* `GitHub copilot`
+### Features
 
-* `jupyter` and `ipython` 
+- Reading data from a CSV file
+- Selecting relevant columns for analysis
+- Executing a Spark SQL query to determine the most common words
+- Transforming column data types
+- Writing the processed data back to a CSV file
 
-* A base set of libraries for devops and web
+### Running the Script
 
-* `githubactions` 
+To run the script, use the following command in the terminal:
 
+```bash
+spark-submit email_analysis.py
