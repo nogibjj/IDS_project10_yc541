@@ -1,6 +1,4 @@
 from pyspark.sql import SparkSession
-from pyspark.sql.functions import col
-from pyspark.sql.types import IntegerType
 
 # Initialize Spark session
 spark = SparkSession.builder \
@@ -8,52 +6,35 @@ spark = SparkSession.builder \
     .getOrCreate()
 
 # Read the dataset
-df = spark.read.csv("path_to_your_csv.csv", header=True, inferSchema=True)
-
-# Assuming the column names in the dataset are as follows
-columns = [
-    "Email_No",
-    "Email_Name",
-    "Most_common_word_1",
-    "Most_common_word_2",
-    # ... and so on
-    "Most_common_word_9",
-    "Unique_values",
-    # ... and other statistical data
-]
+df = spark.read.csv("emails_dataset.csv", header=True, inferSchema=True)
 
 # Select specific columns for analysis
+# Assuming you want to select the columns as seen in your CSV file
 df_selected = df.select(
-    "Email_No",
-    "Email_Name",
-    "Most_common_word_1",
-    "Most_common_word_2",
-    "Most_common_word_3"
+    "`Email No.`", "the", "to", "ect", "and", "for", "of", "a", "you", "hou", "in", "on", "is", "this"
 )
 
 # Register the DataFrame as a SQL temporary view
 df_selected.createOrReplaceTempView("email_data")
 
-# Use SQL query to find the most common words
-most_common_words = spark.sql("""
-SELECT
-    Most_common_word_1 AS Word,
-    COUNT(Most_common_word_1) AS Word_Count
+# Use SQL query to find the most common words counts across all emails
+# This example will sum up all occurrences of the word 'the'
+most_common_word_count = spark.sql("""
+SELECT SUM(`the`) as total_the, SUM(`to`) as total_to, SUM(`ect`) as total_ect
 FROM email_data
-GROUP BY Most_common_word_1
-ORDER BY Word_Count DESC
-LIMIT 10
 """)
 
-most_common_words.show()
+most_common_word_count.show()
 
-# Example of data transformation: Convert all the common word count columns to integer type
-for i in range(1, 10):
-    column_name = f"Most_common_word_{i}"
-    df = df.withColumn(column_name, col(column_name).cast(IntegerType()))
+# Example of data transformation: Convert all the word count columns to integer type
+# This step may not be necessary if your columns were properly inferred as integers,
+# but it is included here for completeness.
+for column_name in df_selected.columns:
+    if column_name != "Email No.":
+        df_selected = df_selected.withColumn(column_name, df_selected[column_name].cast("integer"))
 
 # Save the transformed DataFrame to a new CSV file
-df.write.csv('path_to_output_csv.csv', header=True)
+df_selected.write.csv('transformed_emails_dataset.csv', header=True)
 
 # Stop the Spark session
 spark.stop()
